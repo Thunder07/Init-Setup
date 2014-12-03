@@ -3,9 +3,9 @@ read -p "Enter IP Address For Whitelisting: " IP;
 while true; do;
     read -p "Are You Sure Of This IP $IP?" yn;
 
-    if [ "$yn" == "y"]; then
+    if [ "$yn" == "y"]; then;
         break;
-    elif [ "$yn" == "n" ]; then
+    elif [ "$yn" == "n" ]; then;
         read -p "Enter IP Address For Whitelisting: " IP;
 
     fi;
