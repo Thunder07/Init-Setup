@@ -7,10 +7,10 @@ while true; do;
         break;
     elif [ "$yn" == "n" ]; then
         read -p "Enter IP Address For Whitelisting: " IP;
-    else;
-        echo "Please answer yes or no.";
+
     fi;
-    
+            echo "Please answer yes or no.";
+
 done;
 
 sudo yum install denyhosts -y
