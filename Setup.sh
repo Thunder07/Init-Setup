@@ -2,6 +2,7 @@
 read -p "Enter IP Address For Whitelisting: " IP
 
 sudo yum install denyhosts -y
+systemctl restart denyhosts
 
 if [ "$(id -u)" != "0" ]; then
    echo "This script must be run as root" 1>&2
