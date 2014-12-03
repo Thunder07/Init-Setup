@@ -1,11 +1,23 @@
 #!/bin/bash
+read -p "Enter IP Address For Whitelisting: " IP
+while true; do
+    read -p "Are You Sure Of This IP $IP?" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) read -p "Enter IP Address For Whitelisting: " IP;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+sudo yum install denyhosts -y
+
 if [ "$(id -u)" != "0" ]; then
    echo "This script must be run as root" 1>&2
    exit 1
 fi
 
 echo ':: Adding EPEL repo'
-rpm -ivh http://download.fedoraproject.org/pub/epel/beta/7/x86_64/epel-release-7-1.noarch.rpm || true
+rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm || true
 
 echo ':: Adding Ajenti repo'
 rpm -ivh http://repo.ajenti.org/ajenti-repo-1.0-1.noarch.rpm
@@ -19,3 +31,6 @@ firewall-cmd --permanent --zone=public --add-port=8000/tcp
 firewall-cmd --reload
 
 systemctl restart ajenti
+
+
+
