@@ -45,8 +45,24 @@ echo ':: Done! Open https://<address>:8000 in browser'
 systemctl restart pure-ftpd
 systemctl restart ajenti
 
+
+#For security, changing sshd port
+#You should manually disable ssh root login and create a 2nd root usr
+echo "Securing Root Access, Disabling Remote Root For Security, changing ssh port."
+echo "If You Use SSH, Please Create A 2nd SU before proceeding."
+read -p "Do you want to continue??[y/n]" ans
+if [ $ans == y ] ; then
+      firewall-cmd --permanent --zone=public --add-port=2123/tcp
+      echo "PermitRootLogin no">>/etc/ssh/sshd_config
+      echo "Protocol 2">>/etc/ssh/sshd_config
+      echo "Port 2123">>/etc/ssh/sshd_config
+else
+      echo "Skipping"
+fi
+
 #Extras
 yum install wget -y
+
 
 
 
