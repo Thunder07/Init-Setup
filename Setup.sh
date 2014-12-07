@@ -31,7 +31,10 @@ yum install ajenti-v ajenti-v-nginx ajenti-v-mysql ajenti-v-php-fpm php-mysql aj
 systemctl restart pure-ftpd
 sleep 5
 cd /var/lib/ajenti/plugins/vh-pureftpd/
-cat pureftpd.py | sed -e 's|clf:/var/log/pureftpd.log|clf:/var/log/pureftpd.log\nPassivePortRange            40110 40510\nTLS                         2\nTLSCipherSuite              HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3|g'>pureftpd.py
+cat pureftpd.py | sed -e 's|clf:/var/log/pureftpd.log|clf:/var/log/pureftpd.log\nPassivePortRange            40110 40510\nTLS                         2\nTLSCipherSuite              HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3|g'>pureftpd.py.new
+cat  pureftpd.py.new>pureftpd.py
+rm pureftpd.py.new -f
+python -m pureftpd.py
 cd ~
 
 firewall-cmd --permanent --zone=public --add-port=21/tcp
@@ -43,7 +46,6 @@ firewall-cmd --permanent --zone=public --add-port=8000/tcp
 firewall-cmd --reload
 
 echo ':: Done! Open https://<address>:8000 in browser'
-
 
 systemctl restart pure-ftpd
 systemctl restart ajenti
