@@ -85,8 +85,8 @@ systemctl stop knockd
 /bin/cp -f knock /usr/local/bin/knock
 cd ..
 
-sed 's/\/usr\/sbin\/iptables -A INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT/\/usr\/bin\/firewall-cmd --add-port=22\/tcp/' /etc/knockd.conf >/etc/knockd.conf
-sed 's/\/usr\/sbin\/iptables -D INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT/\/usr\/bin\/firewall-cmd --remove-port=22\/tcp/' /etc/knockd.conf >/etc/knockd.conf
+sed 's|/usr/sbin/iptables -A INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT|/usr/bin/firewall-cmd --add-port=22/tcp/' /etc/knockd.conf >/etc/knockd.conf
+sed 's|/usr/sbin/iptables -D INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT|/usr/bin/firewall-cmd --remove-port=22/tcp/' /etc/knockd.conf >/etc/knockd.conf
 sed 's/syn,ack/syn/' /etc/knockd.conf >/etc/knockd.conf
 
 firewall-cmd --permanent --remove-service=ssh
