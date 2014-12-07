@@ -28,14 +28,11 @@ echo ':: Installing Ajenti package'
 yum install ajenti -y
 yum install ajenti-v ajenti-v-nginx ajenti-v-mysql ajenti-v-php-fpm php-mysql ajenti-v-ftp-pureftpd -y
 
-#systemctl restart pure-ftpd
-#sleep 5
-
-#must setup a sed to scipt edit python
-#useless at the moment, Ajenti overwrites setting after each update though the python script
-#echo "PassivePortRange           40110 40510" >> /etc/pure-ftpd/pure-ftpd.conf
-#echo "TLS           2" >> /etc/pure-ftpd/pure-ftpd.conf
-#echo "TLSCipherSuite           HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3" >> /etc/pure-ftpd/pure-ftpd.conf
+systemctl restart pure-ftpd
+sleep 5
+cd /var/lib/ajenti/plugins/vh-pureftpd/
+cat pureftpd.py | sed -e 's|clf:/var/log/pureftpd.log|clf:/var/log/pureftpd.log\nPassivePortRange            40110 40510\nTLS                         2\nTLSCipherSuite              HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3|g'>pureftpd.py
+cd ~
 
 firewall-cmd --permanent --zone=public --add-port=21/tcp
 firewall-cmd --permanent --zone=public --add-service=ftp
