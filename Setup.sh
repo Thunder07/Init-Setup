@@ -12,6 +12,7 @@ echo "While also configurating ports assoicated with them"
 read -p "Enter Your IP Address For Whitelisting(please dont leave empty, 127.0.0.1 if you must): " IP
 
 rpm -Uvh http://mirror-fpt-telecom.fpt.net/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/denyhosts-2.6-5.el7.rf.noarch.rpm
+cp /etc/hosts.allow hosts.allow.bak
 echo "sshd: $IP">>/etc/hosts.allow
 systemctl restart denyhosts
 
@@ -30,6 +31,7 @@ yum install ajenti-v ajenti-v-nginx ajenti-v-mysql ajenti-v-php-fpm php-mysql aj
 
 systemctl restart pure-ftpd
 sleep 5
+cp /var/lib/ajenti/plugins/vh-pureftpd/pureftpd.py pureftpd.py.bak
 cd /var/lib/ajenti/plugins/vh-pureftpd/
 cat pureftpd.py | sed -e 's|clf:/var/log/pureftpd.log|clf:/var/log/pureftpd.log\nPassivePortRange            40110 40510\nTLS                         2\nTLSCipherSuite              HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3|g'>pureftpd.py.new
 cat  pureftpd.py.new>pureftpd.py
@@ -57,6 +59,7 @@ echo "Securing Root Access, Disabling Remote Root For Security, changing ssh por
 echo "If You Use SSH, Please Create A 2nd SU before proceeding."
 read -p "Do you want to continue??[y/n]" ans
 if [ $ans == y ] ; then
+      cp /etc/ssh/sshd_config sshd_config.bak
       firewall-cmd --permanent --zone=public --add-port=2123/tcp
       echo "PermitRootLogin no">>/etc/ssh/sshd_config
       echo "Protocol 2">>/etc/ssh/sshd_config
@@ -84,9 +87,11 @@ systemctl stop knockd
 /bin/cp -f knock /usr/local/bin/knock
 cd ..
 
-sed 's|/usr/sbin/iptables -A INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT|/usr/bin/firewall-cmd --add-port=22/tcp/' /etc/knockd.conf >/etc/knockd.conf
-sed 's|/usr/sbin/iptables -D INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT|/usr/bin/firewall-cmd --remove-port=22/tcp/' /etc/knockd.conf >/etc/knockd.conf
-sed 's/syn,ack/syn/' /etc/knockd.conf >/etc/knockd.conf
+cp /etc/knockd.conf knockd.conf.bak
+sed 's|/usr/sbin/iptables -A INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT|/usr/bin/firewall-cmd --zone=public --add-rich-rule="rule family="ipv4" source address="%IP%" port protocol="tcp" port="22" accept"|' /etc/knockd.conf >/etc/knockd.conf.1
+sed 's|/usr/sbin/iptables -D INPUT -s %IP% -p tcp --syn --dport 22 -j ACCEPT|/usr/bin/firewall-cmd --zone=public --remove-rich-rule="rule family="ipv4" source address="%IP%" port protocol="tcp" port="22" accept"|' /etc/knockd.conf.1 >/etc/knockd.conf.2
+sed 's/syn,ack/syn/' /etc/knockd.conf.2 >/etc/knockd.conf
+rm -f /etc/knockd.conf.*
 
 firewall-cmd --permanent --remove-service=ssh
 firewall-cmd --permanent --remove-port=22/tcp
