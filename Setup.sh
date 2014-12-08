@@ -7,16 +7,16 @@ fi
 IP=`who am i | awk '{print $5}' | sed 's/[()]//g'`
 ttypts=`who am i | awk '{print $2}' | sed 's|\/[1-9]||g'`
 
-if [ "$ttypts" != "pts"]; then
+if [["$ttypts" != "pts"]]; then
    IP="127.0.0.1"
    echo "we've detected that you're not connected through SSH"
    echo "Thus for whitelisting we will assume your IP is 127.0.0.1"
    
    read -p "Continue(y) or Enter a new IP(n)??[y/n]" ans1
-   if [ $ans1 == "n" ]; then
+   if [[$ans1 == "n"]]; then
       clear
       read -p "Please Enter IP:" IP
-   elif [ $ans1 == "y" ]; then
+   elif [[$ans1 == "y"]]; then
       clear
       echo "Quitting"
       return 0 2> /dev/null || exit 0
