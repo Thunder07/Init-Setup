@@ -39,11 +39,11 @@ echo "While also configurating ports assoicated with them"
 echo "Your IP ($IP) will be whitelisted from denyhosts and granted access to ssh through the firewall."
 
 read -p "Do you want to start??[y/n]" ans2
-if [ $ans2 == "y" ] ; then
-echo "Starting....."
+if [[$ans2 == "y"]] ; then
+   echo "Starting....."
 else
-echo "Quitting"
-return 0 2> /dev/null || exit 0
+   echo "Quitting"
+   return 0 2> /dev/null || exit 0
 if
 
 rpm -Uvh http://mirror-fpt-telecom.fpt.net/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/denyhosts-2.6-5.el7.rf.noarch.rpm
@@ -93,14 +93,14 @@ systemctl restart ajenti
 echo "Securing Root Access, Disabling Remote Root For Security, changing ssh port."
 echo "If You Use SSH, Please Create A 2nd SU before proceeding."
 read -p "Do you want to continue??[y/n]" ans
-if [ $ans == "y" ] ; then
-      cp /etc/ssh/sshd_config sshd_config.bak
-      firewall-cmd --permanent --zone=public --add-port=2123/tcp
-      echo "PermitRootLogin no">>/etc/ssh/sshd_config
-      echo "Protocol 2">>/etc/ssh/sshd_config
-      echo "Port 2123">>/etc/ssh/sshd_config
+if [[$ans == "y"]] ; then
+   cp /etc/ssh/sshd_config sshd_config.bak
+   firewall-cmd --permanent --zone=public --add-port=2123/tcp
+   echo "PermitRootLogin no">>/etc/ssh/sshd_config
+   echo "Protocol 2">>/etc/ssh/sshd_config
+   echo "Port 2123">>/etc/ssh/sshd_config
 else
-      echo "Skipping"
+   echo "Skipping"
 fi
 
 #Extras
