@@ -24,7 +24,7 @@ if [ "$ttypts" != "pts"]; then
       clear
       echo "Answer Unclear Quitting"
       return 0 2> /dev/null || exit 0
-   if
+   fi
 
 fi
 
