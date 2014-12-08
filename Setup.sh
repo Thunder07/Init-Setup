@@ -134,3 +134,4 @@ firewall-cmd --reload
 
 echo "Yum Update"
 yum update -y
+
