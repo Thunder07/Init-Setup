@@ -50,6 +50,7 @@ rpm -Uvh http://mirror-fpt-telecom.fpt.net/repoforge/redhat/el7/en/x86_64/rpmfor
 cp /etc/hosts.allow hosts.allow.bak
 echo "sshd: $IP">>/etc/hosts.allow
 systemctl restart denyhosts
+systemctl enable denyhosts
 
 echo ':: Adding EPEL repo'
 rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm || true
@@ -64,8 +65,6 @@ echo ':: Installing Ajenti package'
 yum install ajenti -y
 yum install ajenti-v ajenti-v-nginx ajenti-v-mysql ajenti-v-php-fpm php-mysql ajenti-v-ftp-pureftpd -y
 
-systemctl restart pure-ftpd
-sleep 5
 cp /var/lib/ajenti/plugins/vh-pureftpd/pureftpd.py pureftpd.py.bak
 cd /var/lib/ajenti/plugins/vh-pureftpd/
 cat pureftpd.py | sed -e 's|clf:/var/log/pureftpd.log|clf:/var/log/pureftpd.log\nPassivePortRange            40110 40510\nTLS                         2\nTLSCipherSuite              HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3|g'>pureftpd.py.new
@@ -86,6 +85,10 @@ echo ':: Done! Open https://<address>:8000 in browser'
 
 systemctl restart pure-ftpd
 systemctl restart ajenti
+systemctl restart nginx
+systemctl enable pure-ftpd
+systemctl enable ajenti
+systemctl enable nginx
 
 
 #For security, changing sshd port
@@ -95,10 +98,8 @@ echo "If You Use SSH, Please Create A 2nd SU before proceeding."
 read -p "Do you want to continue??[y/n]" ans
 if [[$ans == "y"]] ; then
    cp /etc/ssh/sshd_config sshd_config.bak
-   firewall-cmd --permanent --zone=public --add-port=2123/tcp
    echo "PermitRootLogin no">>/etc/ssh/sshd_config
    echo "Protocol 2">>/etc/ssh/sshd_config
-   echo "Port 2123">>/etc/ssh/sshd_config
 else
    echo "Skipping"
 fi
@@ -108,18 +109,16 @@ yum install wget -y
 echo "Downloading, Building, Updating & Setting up Knock"
 #Knock is not avalible for Centos7, Thus we must build it then update it.
 yum install rpm-build redhat-rpm-config make gcc -y
-wget http://www.invoca.ch/pub/packages/knock/RPMS/ils-5/SRPMS/knock-0.5-7.el5.src.rpm
-rpmbuild --rebuild knock-0.5-7.el5.src.rpm
+#wget http://www.invoca.ch/pub/packages/knock/RPMS/ils-5/SRPMS/knock-0.5-7.el5.src.rpm
+#rpmbuild --rebuild knock-0.5-7.el5.src.rpm
+systemctl stop knockd
 wget https://github.com/jvinet/knock/archive/master.zip
 unzip master.zip
 cd knock-master
 autoreconf -fi
-./configure --prefix=/usr/local
+./configure --prefix=/usr
 make
 make install
-systemctl stop knockd
-/bin/cp -f knockd /usr/sbin/knockd
-/bin/cp -f knock /usr/local/bin/knock
 cd ..
 
 cp /etc/knockd.conf knockd.conf.bak
@@ -131,6 +130,9 @@ rm -f /etc/knockd.conf.*
 firewall-cmd --permanent --remove-service=ssh
 firewall-cmd --permanent --remove-port=22/tcp
 firewall-cmd --reload
+
+systemctl start knockd
+systemctl enable knockd
 
 echo "Yum Update"
 yum update -y
