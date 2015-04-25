@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Reset fan speeds after resume, otherwise they blow at maximum speed
+#
+# Used as work-around for ACPI kernel bug 58301
+# https://bugzilla.kernel.org/show_bug.cgi?id=58301
+#
+# The idea for this fix was taken from 
+# http://ubuntuforums.org/showthread.php?t=1761370
+#
+# Author: franz@qnipp.com
+#
+# To be saved as /etc/pm/sleep.d/11_fan_3.11.0
+
+case "$1" in
+  thaw|resume)
+    for i in /sys/class/thermal/cooling_device* ; do 
+      type=`cat $i/type`
+      if [ "$type" = "Fan" ] ; then 
+        echo 0 > $i/cur_state
+      fi
+  done
+  ;;
+esac
