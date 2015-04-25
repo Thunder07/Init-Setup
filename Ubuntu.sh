@@ -17,6 +17,11 @@ sudo apt-get -y install unity-tweak-tool gnome-tweak-tool
 sudo apt-get -y install android-tools-adb android-tools-fastboot
 sudo apt-get -y install android-studio
 
+sudo wget -O /etc/pm/sleep.d/11_fan_3.11.0 https://raw.githubusercontent.com/Thunder07/Init-Setup/master/11_fan_3.11.0
+sudo chmod 755 /etc/pm/sleep.d/11_fan_3.11.0
+sudo wget -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
+sudo chmod a+r /etc/udev/rules.d/51-android.rules
+
 exit
 git clone https://github.com/Thunder07/apk2gold.git
 cd apk2gold
