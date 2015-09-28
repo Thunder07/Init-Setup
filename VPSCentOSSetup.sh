@@ -55,15 +55,17 @@ systemctl enable denyhosts
 echo ':: Adding EPEL repo'
 rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm || true
 
-echo ':: Adding Ajenti repo'
-rpm -ivh http://repo.ajenti.org/ajenti-repo-1.0-1.noarch.rpm
+#echo ':: Adding Ajenti repo'
+#rpm -ivh http://repo.ajenti.org/ajenti-repo-1.0-1.noarch.rpm
 
 rpm -ivh http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 yum install mysql-server -y
 
 echo ':: Installing Ajenti package'
-yum install ajenti -y
-yum install ajenti-v ajenti-v-nginx ajenti-v-mysql ajenti-v-php-fpm php-mysql ajenti-v-ftp-pureftpd -y
+#yum install ajenti -y
+#yum install ajenti-v ajenti-v-nginx ajenti-v-mysql ajenti-v-php-fpm php-mysql ajenti-v-ftp-pureftpd -y
+curl https://raw.githubusercontent.com/ajenti/ajenti/master/scripts/install.sh > install.sh && sudo bash install.sh
+sudo pip install ajenti-panel ajenti.plugin.dashboard ajenti.plugin.settings ajenti.plugin.plugins ajenti.plugin.filemanager ajenti.plugin.notepad ajenti.plugin.packages ajenti.plugin.services ajenti.plugin.terminal
 
 cp /var/lib/ajenti/plugins/vh-pureftpd/pureftpd.py pureftpd.py.bak
 cd /var/lib/ajenti/plugins/vh-pureftpd/
